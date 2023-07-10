@@ -1,18 +1,27 @@
-import { createHTTPServer } from '@trpc/server/adapters/standalone';
+import { createHTTPHandler } from '@trpc/server/adapters/standalone';
 import { publicProcedure, router } from './trpc';
+import cors from 'cors';
+import express from 'express';
 
+const app = express();
+app.use(cors());
 const appRouter = router({
   ping: publicProcedure.query(async () => {
-    return true
+    return true;
   }),
 });
+
+const trpcHandler = createHTTPHandler({
+  router: appRouter,
+});
+
 
 // Export type router type signature,
 // NOT the router itself.
 export type AppRouter = typeof appRouter;
 
-const server = createHTTPServer({
-  router: appRouter,
-});
+app.use('/trpc', trpcHandler);
 
-server.listen(3000);
+app.listen(8000, () => {
+  console.log('Server running on port 8000');
+});
