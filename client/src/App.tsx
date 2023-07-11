@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FormEvent } from 'react';
 import './App.css';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import type { AppRouter } from '../../server';
@@ -11,29 +11,27 @@ const trpc = createTRPCProxyClient<AppRouter>({
   ],
 });
 
-async function main() {
-  const bool = await trpc.ping.query();
-  console.log('Users:', bool);
-}
+async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  const usernameInput = document.getElementById("username") as HTMLInputElement;
+  const passwordInput = document.getElementById("pass") as HTMLInputElement ;
+  const emailInput = document.getElementById("email") as HTMLInputElement ;
+  trpc.register.mutate({username: usernameInput?.value, email: emailInput?.value, password: passwordInput?.value});
+};
 
-main().catch(console.error);
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <form onSubmit={handleSubmit} method='POST'>
+        <label>username</label>
+        <input type='text' id='username' name='username' value="value"/><br></br>
+        <label>email</label>
+        <input type='text' id='email' name='email'/><br></br>
+        <label>password</label>
+        <input type='password' id='pass' name='pass'/><br></br>
+        <input name="Submit"  type="submit" value="Register"/>
+      </form>
     </div>
   );
 }

@@ -3,10 +3,12 @@
   "version": "10.34.0",
   "private": true,
   "dependencies": {
+    "@prisma/client": "4.16.2",
     "@trpc/server": "^10.34.0",
     "zod": "^3.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.16.16"
+    "@types/node": "^18.16.16",
+    "prisma": "4.16.2"
   }
 }

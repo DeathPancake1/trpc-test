@@ -2,19 +2,33 @@ import { createHTTPHandler } from '@trpc/server/adapters/standalone';
 import { publicProcedure, router } from './trpc';
 import cors from 'cors';
 import express from 'express';
+import { z } from 'zod';
+import { PrismaClient } from '@prisma/client'
+import { renderTrpcPanel } from "trpc-panel";
+import { User, Todo } from "./types"; 
 
+
+const prisma = new PrismaClient()
 const app = express();
 app.use(cors());
 const appRouter = router({
-  ping: publicProcedure.query(async () => {
-    return true;
-  }),
+  register: publicProcedure
+    .input(z.object({ username: z.string(), email: z.string(), password: z.string() }))
+    .mutation(({ input }) => {
+      const user = input;
+      const created = prisma.user.create({data: user});
+      return created;
+    }),
 });
 
 const trpcHandler = createHTTPHandler({
   router: appRouter,
 });
-
+app.use("/panel", (_, res) => {
+  return res.send(
+    renderTrpcPanel(appRouter, { url: "http://localhost:8000" })
+  );
+});
 
 // Export type router type signature,
 // NOT the router itself.
