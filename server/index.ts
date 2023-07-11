@@ -10,8 +10,21 @@ import { User, Todo } from "./types";
 
 const prisma = new PrismaClient()
 const app = express();
+app.use(express.json());
 app.use(cors());
 const appRouter = router({
+  login: publicProcedure.input(z.object({ email: z.string(), password: z.string()})).query(async (opts) => {
+    const { input } = opts;
+    const checked = prisma.user.findFirst({
+      where: {
+        'AND': [
+          {email: input.email},
+          {password: input.password}
+        ]
+      }
+    })
+    return checked;
+  }),
   register: publicProcedure
     .input(z.object({ username: z.string(), email: z.string(), password: z.string() }))
     .mutation(({ input }) => {
@@ -19,10 +32,16 @@ const appRouter = router({
       const created = prisma.user.create({data: user});
       return created;
     }),
+  
 });
 
 const trpcHandler = createHTTPHandler({
   router: appRouter,
+  createContext: () => {
+    return {
+      prisma,
+    };
+  },
 });
 app.use("/panel", (_, res) => {
   return res.send(
