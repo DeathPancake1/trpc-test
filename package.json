@@ -5,9 +5,7 @@
   "scripts": {
     "build": "tsc",
     "dev:server": "tsx watch server",
-    "dev:client": "wait-port 3000 && cd client && npm start",
-    "dev": "run-p dev:* --print-label",
-    "start": "node dist/server",
+    "dev:client": "cd client && npm start",
     "lint": "eslint --ext \".js,.ts,.tsx\" --report-unused-disable-directives */*.ts",
     "test-dev": "start-server-and-test 'tsx server' 3000 'npm run dev:client'",
     "test-start": "start-server-and-test 'node dist/server' 3000 'npm run dev:client'"
@@ -18,6 +16,7 @@
   ],
   "devDependencies": {
     "@types/node": "^18.16.16",
+    "concurrently": "^8.2.0",
     "eslint": "^8.40.0",
     "npm-run-all": "^4.1.5",
     "start-server-and-test": "^1.12.0",
@@ -28,7 +27,6 @@
   "dependencies": {
     "next": "^13.4.9",
     "react": "^18.2.0",
-    "react-dom": "^17.0.2",
     "react-router-dom": "^6.14.1",
     "trpc-panel": "^1.3.4"
   }
