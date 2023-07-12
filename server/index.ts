@@ -26,7 +26,7 @@ const appRouter = router({
     return checked;
   }),
   register: publicProcedure
-    .input(z.object({ username: z.string(), email: z.string(), password: z.string() }))
+    .input(z.object({ username: z.string(), email: z.string().nonempty('Email is required'), password: z.string().nonempty('Password is required'), }))
     .mutation(({ input }) => {
       const user = input;
       const created = prisma.user.create({data: user});

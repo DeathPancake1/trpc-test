@@ -1,6 +1,7 @@
 import React, { FormEvent } from 'react';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import type { AppRouter } from '../../../server';
+import { useNavigate } from 'react-router-dom';
 
 const trpc = createTRPCProxyClient<AppRouter>({
   links: [
@@ -10,15 +11,20 @@ const trpc = createTRPCProxyClient<AppRouter>({
   ],
 });
 
-async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-  const passwordInput = document.getElementById("pass") as HTMLInputElement ;
-  const emailInput = document.getElementById("email") as HTMLInputElement ;
-  trpc.login.query({ email: emailInput?.value, password: passwordInput?.value});
-};
-
 
 function Login() {
+  const navigate = useNavigate();
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const passwordInput = document.getElementById("pass") as HTMLInputElement ;
+    const emailInput = document.getElementById("email") as HTMLInputElement ;
+    const user = await trpc.login.query({ email: emailInput?.value, password: passwordInput?.value});
+    if(user !== null){
+      navigate("/todo");
+    }
+  };
+
   return (
     <div className="App">
       <form onSubmit={handleSubmit} method='POST'>
