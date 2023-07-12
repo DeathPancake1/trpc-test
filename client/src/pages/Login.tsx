@@ -19,14 +19,23 @@ function Login() {
     event.preventDefault();
     const passwordInput = document.getElementById("pass") as HTMLInputElement ;
     const emailInput = document.getElementById("email") as HTMLInputElement ;
-    const user = await trpc.log.login.query({ email: emailInput?.value, password: passwordInput?.value});
-    if(user !== null){
-      navigate(`/todo/${user.id}`);
+    try{
+      const user = await trpc.log.login.query({ email: emailInput?.value, password: passwordInput?.value});
+      if(user !== null){
+        navigate(`/todo/${user.id}`);
+      }
+    }
+    catch(e){
+      const node = document.createElement("p");
+      const textnode = document.createTextNode("Account doesn't match");
+      node.appendChild(textnode);
+      document.getElementById('login-div')?.appendChild(node);
+      console.log(e)
     }
   };
 
   return (
-    <div className="App">
+    <div className="App" id='login-div'>
       <form onSubmit={handleSubmit} method='POST'>
         <label>Email</label>
         <input type='text' id='email' name='email'/><br></br>
