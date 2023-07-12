@@ -5,14 +5,14 @@ import express from 'express';
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client'
 import { renderTrpcPanel } from "trpc-panel";
-import { User, Todo } from "./types"; 
+import { title } from 'process';
 
 
 const prisma = new PrismaClient()
 const app = express();
 app.use(express.json());
 app.use(cors());
-const appRouter = router({
+const loginRouter = router({
   login: publicProcedure.input(z.object({ email: z.string(), password: z.string()})).query(async (opts) => {
     const { input } = opts;
     const checked = prisma.user.findFirst({
@@ -33,6 +33,37 @@ const appRouter = router({
       return created;
     }),
   
+});
+
+const todoRouter = router({
+  getTodos: publicProcedure
+    .input(z.number())
+    .query( async (opts) => {
+      const {input} = opts;
+      const todos = await prisma.todo.findMany({
+        where: {
+          authorId: input
+        }
+      });
+      return todos;
+    }),
+  addTodo: publicProcedure
+    .input(z.object({ authorId: z.number(), title: z.string().nonempty('Title should not be empty') }))
+    .mutation( async (opts) => {
+      const {input} = opts;
+      await prisma.todo.create({
+        data: {
+          title: input.title,
+          author: { connect: { id: input.authorId } },
+          finished: false
+        }
+      });
+    }),
+});
+
+const appRouter = router({
+  log: loginRouter,
+  todo: todoRouter,
 });
 
 const trpcHandler = createHTTPHandler({

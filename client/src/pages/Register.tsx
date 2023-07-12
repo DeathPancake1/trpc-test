@@ -21,7 +21,7 @@ function Register() {
     const passwordInput = document.getElementById("pass") as HTMLInputElement ;
     const emailInput = document.getElementById("email") as HTMLInputElement ;
     try{
-      await trpc.register.mutate({username: usernameInput?.value, email: emailInput?.value, password: passwordInput?.value});
+      await trpc.log.register.mutate({username: usernameInput?.value, email: emailInput?.value, password: passwordInput?.value});
       navigate('/login');
     }
     catch(e){

@@ -19,9 +19,9 @@ function Login() {
     event.preventDefault();
     const passwordInput = document.getElementById("pass") as HTMLInputElement ;
     const emailInput = document.getElementById("email") as HTMLInputElement ;
-    const user = await trpc.login.query({ email: emailInput?.value, password: passwordInput?.value});
+    const user = await trpc.log.login.query({ email: emailInput?.value, password: passwordInput?.value});
     if(user !== null){
-      navigate("/todo");
+      navigate(`/todo/${user.id}`);
     }
   };
 
