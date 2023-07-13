@@ -5,7 +5,7 @@ Requires node 18 (for global fetch).
 ## Start Dev Demo
 
 ```
-sudo systemctl start postgresql
+sudo service postgresql start
 npm i
 prisma migrate dev --name init
 npm run dev:server
