@@ -1,21 +1,11 @@
-import { /*useNavigate,*/ useParams } from "react-router-dom";
-import { AppRouter } from "../../../server";
-import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { TodoType } from "../../../server/types"
+import trpc from "../trpcClient";
 
 function Todo() {
     const { id } = useParams();
     const [todos, setTodos] = useState<TodoType[]>();
-    const trpc = createTRPCProxyClient<AppRouter>({
-        links: [
-          httpBatchLink({
-            url: 'http://localhost:8000/trpc',
-          }),
-        ],
-    });
-
-    //const navigate = useNavigate();
 
     useEffect(() => {
         getTodos()
@@ -25,7 +15,11 @@ function Todo() {
       }, []);
     const getTodos = async () => {
         try{
-          const todoItems:TodoType[] = await trpc.todo.getTodos.query(Number(id));
+          let authorId: number = 0;
+          if(id !== undefined){
+            authorId = parseInt(id);
+          }
+          const todoItems:TodoType[] = await trpc.todo.getTodos.query({authorId: authorId});
           return todoItems;
         }
         catch(e){

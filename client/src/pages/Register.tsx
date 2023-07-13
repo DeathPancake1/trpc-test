@@ -1,16 +1,6 @@
-import React, { FormEvent } from 'react';
-import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from '../../../server';
+import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const trpc = createTRPCProxyClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: 'http://localhost:8000/trpc',
-    }),
-  ],
-});
-
+import trpc from '../trpcClient';
 
 function Register() {
   const navigate = useNavigate();
@@ -21,7 +11,7 @@ function Register() {
     const passwordInput = document.getElementById("pass") as HTMLInputElement ;
     const emailInput = document.getElementById("email") as HTMLInputElement ;
     try{
-      await trpc.log.register.mutate({username: usernameInput?.value, email: emailInput?.value, password: passwordInput?.value});
+      await trpc.auth.register.mutate({username: usernameInput?.value, email: emailInput?.value, password: passwordInput?.value});
       navigate('/login');
     }
     catch(e){
