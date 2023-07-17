@@ -1,0 +1,15 @@
+FROM node:14
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm i
+
+COPY . ./
+
+EXPOSE 8000
+
+ENV DATABASE_URL=postgresql://postgres:password@192.168.1.13:5432/trpc?schema=public
+
+CMD ["npm", "start"]

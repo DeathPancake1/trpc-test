@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { TodoType } from "../../../server/types"
+import { TodoType } from "../types"
 import trpc from "../trpcClient";
 
 function Todo() {
