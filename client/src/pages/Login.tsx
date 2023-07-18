@@ -1,26 +1,31 @@
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import trpc from '../trpcClient';
 
 function Login() {
   const navigate = useNavigate();
+  const [formState, setFormState] = useState({
+    email: '',
+    pass: ''
+  });
+  let node = <></>;
+  const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = target;
+    setFormState((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };  
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const passwordInput = document.getElementById("pass") as HTMLInputElement ;
-    const emailInput = document.getElementById("email") as HTMLInputElement ;
     try{
-      const user = await trpc.auth.login.query({ email: emailInput?.value, password: passwordInput?.value});
-      if(user !== null){
-        navigate(`/todo/${user?.id}`);
-      }
+      const user = await trpc.auth.login.query({ email: formState.email, password: formState.pass });
+      navigate(`/todo/${user?.id}`);
     }
     catch(e){
-      const node = document.createElement("p");
-      const textnode = document.createTextNode("Account doesn't match");
-      node.appendChild(textnode);
-      document.getElementById('login-div')?.appendChild(node);
-      console.log(e)
+      node = <h1>The email or password don't match</h1>;
+      console.log(e);
     }
   };
 
@@ -28,10 +33,11 @@ function Login() {
     <div className="App" id='login-div'>
       <form onSubmit={handleSubmit} method='POST'>
         <label>Email</label>
-        <input type='text' id='email' name='email'/><br></br>
-        <label>password</label>
-        <input type='password' id='pass' name='pass'/><br></br>
+        <input type='text' id='email' name='email' value={formState.email} onChange={handleChange} /><br></br>
+        <label>Password</label>
+        <input type='password' id='pass' name='pass' value={formState.pass} onChange={handleChange}/><br></br>
         <input name="Submit"  type="submit" value="Login"/>
+        { node }
       </form>
     </div>
   );

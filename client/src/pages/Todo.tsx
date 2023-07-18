@@ -1,10 +1,11 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { TodoType } from "../types"
 import trpc from "../trpcClient";
 
 function Todo() {
     const { id } = useParams();
+    const [title, setTitle] = useState('');
     const [todos, setTodos] = useState<TodoType[]>();
 
     useEffect(() => {
@@ -27,25 +28,26 @@ function Todo() {
         } 
     };
     const addTodos = async () => {
-        const todoTitle = document.getElementById('title') as HTMLInputElement;
         try{
-            await trpc.todo.addTodo.mutate({authorId: Number(id), title: todoTitle?.value});
+            await trpc.todo.addTodo.mutate({authorId: Number(id), title: title});
             getTodos()
             .then((data) => {setTodos(data)})
             .catch((error) => console.error(error));
-            if (todoTitle !== undefined) {
-                todoTitle.value = "";
-              }
+            setTitle('');
         }
         catch(e){
             console.log(e);
         }
     };
 
+    const handleChangeTitle = (event: { target: { value: SetStateAction<string>; }; }) =>{
+        setTitle(event.target.value);
+    }
+
     return (
         <>
             <div>
-                <input type="text" id="title" placeholder="Todo Title"></input>
+                <input type="text" id="title" placeholder="Todo Title" value={title} onChange={handleChangeTitle}></input>
                 <button type="button" onClick={addTodos}>Add!</button>
             </div>
             <div>
