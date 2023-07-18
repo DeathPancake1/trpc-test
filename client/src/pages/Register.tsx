@@ -1,14 +1,20 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import trpc from '../trpcClient';
+import { useMutation } from 'react-query';
 
 function Register() {
   const navigate = useNavigate();
-  let node = <></>;
   const [ formState, setFormState ] = useState({
     username: '',
     email: '',
     password: ''
+  });
+
+  const registerMutation = useMutation((formData: {username: string, email: string, password: string}) => trpc.auth.register.mutate({username:formData.username, email: formData.email, password: formData.password}), {
+    onSuccess: () => {
+      navigate(`/login`);
+    }
   });
 
   const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,15 +27,7 @@ function Register() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try{
-      await trpc.auth.register.mutate({username: formState.username, email: formState.email, password: formState.password});
-      navigate('/login');
-    }
-    catch(e){
-      node = <h1>Wrong info</h1>
-      console.log(e);
-    }
-    
+    registerMutation.mutate({username: formState.username, email: formState.email, password: formState.password});
   };
 
   return (
@@ -40,9 +38,10 @@ function Register() {
         <label>email</label>
         <input type='text' id='email' name='email' value={formState.email} onChange={handleChange}/><br></br>
         <label>password</label>
-        <input type='password' id='pass' name='pass' value={formState.password} onChange={handleChange}/><br></br>
+        <input type='password' id='password' name='password' value={formState.password} onChange={handleChange}/><br></br>
         <input name="Submit"  type="submit" value="Register"/>
-        { node }
+        {registerMutation.isLoading && <div>Loading...</div>}
+        {registerMutation.isError && <div>Error</div>}
       </form>
     </div>
   );

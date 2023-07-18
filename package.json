@@ -27,8 +27,12 @@
     "wait-port": "^1.0.1"
   },
   "dependencies": {
+    "@trpc/client": "^9.27.4",
+    "@trpc/react": "^9.27.4",
+    "@trpc/server": "^9.27.4",
     "next": "^13.4.9",
     "react": "^18.2.0",
+    "react-query": "^3.39.3",
     "react-router-dom": "^6.14.1"
   }
 }
