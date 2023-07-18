@@ -2,18 +2,20 @@
 
 Requires node 18 (for global fetch).
 
-## Playing around
+## Start Dev Demo
 
 ```
+sudo service postgresql start
 npm i
-npm run dev
+prisma migrate dev --name init
+npm run dev:server
+npm run dev:client
 ```
 
-Try editing the ts files to see the type checking in action :)
+## Enviroment Variables
 
-## Building
+Make sure to create a ```.env``` file with valid postgres server credentials
 
 ```
-npm run build
-npm run start
+DATABASE_URL="postgresql://prisma:password@localhost:5432/trpc?schema=public"
 ```
